@@ -6,12 +6,60 @@ import { GenericContractsDeclaration } from "~~/utils/scaffold-eth/contract";
 
 const deployedContracts = {
   31337: {
-    YourCollectible: {
-      address: "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+    ClassyLoogies: {
+      address: "0x95401dc811bb5740090279Ba06cfA8fcF6113778",
       abi: [
         {
           type: "constructor",
-          inputs: [],
+          inputs: [
+            {
+              name: "classesInformation",
+              type: "tuple[]",
+              internalType: "struct ClassyLoogies.ClassStruct[]",
+              components: [
+                {
+                  name: "name",
+                  type: "string",
+                  internalType: "string",
+                },
+                {
+                  name: "description",
+                  type: "string",
+                  internalType: "string",
+                },
+                {
+                  name: "weapon",
+                  type: "string",
+                  internalType: "string",
+                },
+                {
+                  name: "strength",
+                  type: "uint256",
+                  internalType: "uint256",
+                },
+                {
+                  name: "spellpower",
+                  type: "uint256",
+                  internalType: "uint256",
+                },
+                {
+                  name: "dexterity",
+                  type: "uint256",
+                  internalType: "uint256",
+                },
+                {
+                  name: "hatSvg",
+                  type: "string",
+                  internalType: "string",
+                },
+                {
+                  name: "weaponSvg",
+                  type: "string",
+                  internalType: "string",
+                },
+              ],
+            },
+          ],
           stateMutability: "nonpayable",
         },
         {
@@ -40,82 +88,6 @@ const deployedContracts = {
               name: "owner",
               type: "address",
               internalType: "address",
-            },
-          ],
-          outputs: [
-            {
-              name: "",
-              type: "uint256",
-              internalType: "uint256",
-            },
-          ],
-          stateMutability: "view",
-        },
-        {
-          type: "function",
-          name: "chubbiness",
-          inputs: [
-            {
-              name: "",
-              type: "uint256",
-              internalType: "uint256",
-            },
-          ],
-          outputs: [
-            {
-              name: "",
-              type: "uint256",
-              internalType: "uint256",
-            },
-          ],
-          stateMutability: "view",
-        },
-        {
-          type: "function",
-          name: "class",
-          inputs: [
-            {
-              name: "",
-              type: "uint256",
-              internalType: "uint256",
-            },
-          ],
-          outputs: [
-            {
-              name: "",
-              type: "uint256",
-              internalType: "uint256",
-            },
-          ],
-          stateMutability: "view",
-        },
-        {
-          type: "function",
-          name: "color",
-          inputs: [
-            {
-              name: "",
-              type: "uint256",
-              internalType: "uint256",
-            },
-          ],
-          outputs: [
-            {
-              name: "",
-              type: "bytes3",
-              internalType: "bytes3",
-            },
-          ],
-          stateMutability: "view",
-        },
-        {
-          type: "function",
-          name: "dexterity",
-          inputs: [
-            {
-              name: "",
-              type: "uint256",
-              internalType: "uint256",
             },
           ],
           outputs: [
@@ -172,7 +144,7 @@ const deployedContracts = {
         },
         {
           type: "function",
-          name: "mintItem",
+          name: "mint",
           inputs: [
             {
               name: "name",
@@ -187,7 +159,7 @@ const deployedContracts = {
           ],
           outputs: [
             {
-              name: "",
+              name: "ts",
               type: "uint256",
               internalType: "uint256",
             },
@@ -198,25 +170,6 @@ const deployedContracts = {
           type: "function",
           name: "name",
           inputs: [],
-          outputs: [
-            {
-              name: "",
-              type: "string",
-              internalType: "string",
-            },
-          ],
-          stateMutability: "view",
-        },
-        {
-          type: "function",
-          name: "names",
-          inputs: [
-            {
-              name: "",
-              type: "uint256",
-              internalType: "uint256",
-            },
-          ],
           outputs: [
             {
               name: "",
@@ -260,7 +213,7 @@ const deployedContracts = {
         },
         {
           type: "function",
-          name: "renderTokenById",
+          name: "renderToken",
           inputs: [
             {
               name: "id",
@@ -270,7 +223,7 @@ const deployedContracts = {
           ],
           outputs: [
             {
-              name: "",
+              name: "render",
               type: "string",
               internalType: "string",
             },
@@ -352,44 +305,6 @@ const deployedContracts = {
           ],
           outputs: [],
           stateMutability: "nonpayable",
-        },
-        {
-          type: "function",
-          name: "spellpower",
-          inputs: [
-            {
-              name: "",
-              type: "uint256",
-              internalType: "uint256",
-            },
-          ],
-          outputs: [
-            {
-              name: "",
-              type: "uint256",
-              internalType: "uint256",
-            },
-          ],
-          stateMutability: "view",
-        },
-        {
-          type: "function",
-          name: "strength",
-          inputs: [
-            {
-              name: "",
-              type: "uint256",
-              internalType: "uint256",
-            },
-          ],
-          outputs: [
-            {
-              name: "",
-              type: "uint256",
-              internalType: "uint256",
-            },
-          ],
-          stateMutability: "view",
         },
         {
           type: "function",
@@ -478,7 +393,7 @@ const deployedContracts = {
           ],
           outputs: [
             {
-              name: "",
+              name: "metadata",
               type: "string",
               internalType: "string",
             },
@@ -646,6 +561,21 @@ const deployedContracts = {
             },
           ],
           anonymous: false,
+        },
+        {
+          type: "error",
+          name: "ClassyLoogies__NotEnoughEther",
+          inputs: [],
+        },
+        {
+          type: "error",
+          name: "ClassyLoogies__NotValidClass",
+          inputs: [],
+        },
+        {
+          type: "error",
+          name: "ClassyLoogies__NotValidName",
+          inputs: [],
         },
         {
           type: "error",

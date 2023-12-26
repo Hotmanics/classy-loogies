@@ -10,12 +10,12 @@ import 'react-dropdown/style.css';
 export const ClassyLoogies = () => {
     const { address: account } = useAccount();
 
-    const { writeAsync: mint } = useScaffoldContractWrite({ contractName: "YourCollectible", functionName: "mintItem", args: ["", BigInt(0)], value: parseEther("0.05") });
+    const { writeAsync: mint } = useScaffoldContractWrite({ contractName: "ClassyLoogies", functionName: "mint", args: ["", BigInt(0)], value: parseEther("0.05") });
 
-    const { data: ownerBalance } = useScaffoldContractRead({ contractName: "YourCollectible", functionName: "balanceOf", args: [account] });
+    const { data: ownerBalance } = useScaffoldContractRead({ contractName: "ClassyLoogies", functionName: "balanceOf", args: [account] });
 
     const { data: yourContract } = useScaffoldContract({
-        contractName: "YourCollectible",
+        contractName: "ClassyLoogies",
     });
 
     const [myTokens, setMyTokens] = useState<IClassyLoogie[]>([]);

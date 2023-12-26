@@ -3,7 +3,8 @@ pragma solidity ^0.8.19;
 
 import "../contracts/YourContract.sol";
 import "./DeployHelpers.s.sol";
-import "../contracts/YourCollectible.sol";
+import {ClassyLoogies} from "../contracts/ClassyLoogies.sol";
+import {ClassesDeployer} from "./ClassesDeployer.s.sol";
 
 contract DeployScript is ScaffoldETHDeploy {
     error InvalidPrivateKey(string);
@@ -15,8 +16,11 @@ contract DeployScript is ScaffoldETHDeploy {
                 "You don't have a deployer account. Make sure you have set DEPLOYER_PRIVATE_KEY in .env or use `yarn generate` to generate a new random account"
             );
         }
+
+        ClassyLoogies.ClassStruct[] memory classes = new ClassesDeployer()
+            .getClasses();
         vm.startBroadcast(deployerPrivateKey);
-        YourCollectible yourContract = new YourCollectible();
+        ClassyLoogies yourContract = new ClassyLoogies(classes);
         console.logString(
             string.concat(
                 "YourContract deployed at: ",
