@@ -118,7 +118,8 @@ export const ClassyLoogies = () => {
           <Tab>My Classy Loogies</Tab>
         </TabList>
         <TabPanel>
-          <div className="flex flex-col items-center">
+          <p className="my-1 text-2xl text-center">Create Your Classy Loogie!</p>
+          <div className="flex items-center">
             <form
               className="flex flex-col justify-center items-center"
               method="post"
@@ -127,7 +128,8 @@ export const ClassyLoogies = () => {
                 await handleMint(event.target.nameInput.value);
               }}
             >
-              <p className="my-1 text-2xl">Create your Classy Loogie!</p>
+              <p className="my-1 text-2xl">Customization</p>
+
               <p>Name</p>
               <input
                 name="nameInput"
@@ -158,14 +160,15 @@ export const ClassyLoogies = () => {
               </button>
               <p className="my-1">*Minting costs at least .05 ether</p>
             </form>
-
-            <p className="text-2xl">Preview</p>
-            <ClassyLoogieAbstracted
-              name={json.name}
-              description={json.description}
-              image={json.image}
-              attributes={json.attributes}
-            ></ClassyLoogieAbstracted>
+            <div className="mx-5">
+              <p className="text-center text-2xl">Preview</p>
+              <ClassyLoogieAbstracted
+                name={json.name}
+                description={json.description}
+                image={json.image}
+                attributes={json.attributes}
+              ></ClassyLoogieAbstracted>
+            </div>
           </div>
         </TabPanel>
         <TabPanel>

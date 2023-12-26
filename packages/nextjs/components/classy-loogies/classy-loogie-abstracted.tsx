@@ -20,7 +20,7 @@ export const ClassyLoogieAbstracted: React.FC<IClassyLoogieAbstracted> = props =
   ));
 
   return (
-    <div className="w-80 px-5 flex flex-col items-center justify-center bg-black mx-1">
+    <div className="w-80 px-5 flex flex-col items-center justify-center bg-[#00008B] mx-1">
       <Image src={props.image || ""} alt="" width={150} height={100}></Image>
       <p className="text-center">{props.name}</p>
       <p className="my-1 text-center"> {props.description}</p>
