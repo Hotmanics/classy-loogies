@@ -7,12 +7,12 @@ contract ClassesDeployer {
     function getClasses()
         external
         pure
-        returns (ClassyLoogies.ClassStruct[] memory)
+        returns (ClassyLoogies.ConstantClassInformation[] memory)
     {
-        ClassyLoogies.ClassStruct[]
-            memory classes = new ClassyLoogies.ClassStruct[](3);
+        ClassyLoogies.ConstantClassInformation[]
+            memory classes = new ClassyLoogies.ConstantClassInformation[](3);
 
-        classes[0] = ClassyLoogies.ClassStruct(
+        classes[0] = ClassyLoogies.ConstantClassInformation(
             "Warrior",
             "A fearless and skilled warrior, forged in the crucible of battle.",
             "Sword",
@@ -23,7 +23,7 @@ contract ClassesDeployer {
             '<g id="weapon" transform = "rotate(-45 60 60)"><rect x="20" y="150" width="20" height="150" fill="#B0B0B0" /><rect x="10" y="250" width="40" height="20" fill="black" /></g>'
         );
 
-        classes[1] = ClassyLoogies.ClassStruct(
+        classes[1] = ClassyLoogies.ConstantClassInformation(
             "Mage",
             "A wise and mystical wizard, channeling the arcane forces of the universe.",
             "Staff",
@@ -34,7 +34,7 @@ contract ClassesDeployer {
             '<g id="weapon"><rect x="125" y="75" width="200" height="20"  transform = "rotate(45 60 60)" style="fill:rgb(222,184,135);stroke-width:3;stroke:rgb(0,0,0)" /><ellipse ry="20" rx="20" id="svg_4" cy="125.5" cx="90" stroke-width="3" fill="grey" stroke="#000"/></g>'
         );
 
-        classes[2] = ClassyLoogies.ClassStruct(
+        classes[2] = ClassyLoogies.ConstantClassInformation(
             "Archer",
             "A silent sentinel of the woods, the archer's agile form and focused gaze unleash arrows with lethal accuracy.",
             "Bow",

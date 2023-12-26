@@ -1,7 +1,6 @@
 //SPDX-License-Identifier: MIT
 pragma solidity ^0.8.19;
 
-import "../contracts/YourContract.sol";
 import "./DeployHelpers.s.sol";
 import {ClassyLoogies} from "../contracts/ClassyLoogies.sol";
 import {ClassesDeployer} from "./ClassesDeployer.s.sol";
@@ -17,8 +16,8 @@ contract DeployScript is ScaffoldETHDeploy {
             );
         }
 
-        ClassyLoogies.ClassStruct[] memory classes = new ClassesDeployer()
-            .getClasses();
+        ClassyLoogies.ConstantClassInformation[]
+            memory classes = new ClassesDeployer().getClasses();
         vm.startBroadcast(deployerPrivateKey);
         ClassyLoogies yourContract = new ClassyLoogies(classes);
         console.logString(
