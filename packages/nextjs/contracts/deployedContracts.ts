@@ -7,7 +7,7 @@ import { GenericContractsDeclaration } from "~~/utils/scaffold-eth/contract";
 const deployedContracts = {
   31337: {
     ClassyLoogies: {
-      address: "0xc6e7DF5E7b4f2A278906862b61205850344D4e7d",
+      address: "0x59b670e9fA9D0A427751Af201D676719a970857b",
       abi: [
         {
           type: "constructor",
@@ -101,6 +101,70 @@ const deployedContracts = {
         },
         {
           type: "function",
+          name: "generateEye1",
+          inputs: [],
+          outputs: [
+            {
+              name: "component",
+              type: "string",
+              internalType: "string",
+            },
+          ],
+          stateMutability: "pure",
+        },
+        {
+          type: "function",
+          name: "generateEye2",
+          inputs: [],
+          outputs: [
+            {
+              name: "component",
+              type: "string",
+              internalType: "string",
+            },
+          ],
+          stateMutability: "pure",
+        },
+        {
+          type: "function",
+          name: "generateHat",
+          inputs: [
+            {
+              name: "classId",
+              type: "uint256",
+              internalType: "uint256",
+            },
+          ],
+          outputs: [
+            {
+              name: "component",
+              type: "string",
+              internalType: "string",
+            },
+          ],
+          stateMutability: "view",
+        },
+        {
+          type: "function",
+          name: "generateHead",
+          inputs: [
+            {
+              name: "color",
+              type: "string",
+              internalType: "string",
+            },
+          ],
+          outputs: [
+            {
+              name: "component",
+              type: "string",
+              internalType: "string",
+            },
+          ],
+          stateMutability: "pure",
+        },
+        {
+          type: "function",
           name: "generateMetadata",
           inputs: [
             {
@@ -144,6 +208,25 @@ const deployedContracts = {
             },
           ],
           stateMutability: "pure",
+        },
+        {
+          type: "function",
+          name: "generateWeapon",
+          inputs: [
+            {
+              name: "classId",
+              type: "uint256",
+              internalType: "uint256",
+            },
+          ],
+          outputs: [
+            {
+              name: "component",
+              type: "string",
+              internalType: "string",
+            },
+          ],
+          stateMutability: "view",
         },
         {
           type: "function",

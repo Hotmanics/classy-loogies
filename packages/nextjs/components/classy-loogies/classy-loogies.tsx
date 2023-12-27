@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { ClassyLoogie, IClassyLoogie } from "./classy-loogie";
-// import { ClassyLoogieAbstracted } from "./classy-loogie-abstracted";
+import { ClassyLoogieAbstracted } from "./classy-loogie-abstracted";
 import { SketchPicker } from "react-color";
 import Dropdown from "react-dropdown";
 import "react-dropdown/style.css";
@@ -56,7 +56,7 @@ export const ClassyLoogies = () => {
     getAllOwnedTokens();
   }, [ownerBalance]);
 
-  // const [attributes, setAttributes] = useState([{ name: "", value: "" }]);
+  const [attributes, setAttributes] = useState([{ name: "", value: "" }]);
 
   const { data: allConstantClasses } = useScaffoldContractRead({
     contractName: "ClassyLoogies",
@@ -83,7 +83,7 @@ export const ClassyLoogies = () => {
       value: allConstantClasses![+selectedOption.value].dexterity.toString(),
     });
 
-    // setAttributes(selectedAttributes);
+    setAttributes(selectedAttributes);
   }
 
   useEffect(() => {
@@ -98,13 +98,13 @@ export const ClassyLoogies = () => {
     await mint({ args: [name, color, BigInt(+selectedOption.value)] });
   }
 
-  // const [selectedName, setSelectedName] = useState("Alfred");
+  const [selectedName, setSelectedName] = useState("Alfred");
 
   async function onNameChange(event: any) {
     event.preventDefault();
     const target = event.target;
 
-    // setSelectedName(target.value);
+    setSelectedName(target.value);
     console.log(target.value);
   }
 
@@ -120,20 +120,43 @@ export const ClassyLoogies = () => {
 
   const defaultOption = selectedOption;
 
-  // const { data: selectedClassInformation } = useScaffoldContractRead({
-  //     contractName: "ClassyLoogies",
-  //     functionName: "getConstantClassInformation",
-  //     args: [BigInt(selectedOption.value)],
-  // });
+  const { data: selectedClassInformation } = useScaffoldContractRead({
+    contractName: "ClassyLoogies",
+    functionName: "getConstantClassInformation",
+    args: [BigInt(selectedOption.value)],
+  });
 
-  //   const { data: generatedMetadata } = useScaffoldContractRead({
-  //     contractName: "ClassyLoogies",
-  //     functionName: "generateMetadata",
-  //     args: [selectedName, selectedClassInformation?.description, color, BigInt(selectedOption.value), attributes],
-  //   });
+  const { data: svgOne } = useScaffoldContractRead({ contractName: "ClassyLoogies", functionName: "generateEye1" });
+  const { data: svgTwo } = useScaffoldContractRead({
+    contractName: "ClassyLoogies",
+    functionName: "generateHead",
+    args: [color],
+  });
+  const { data: svgThree } = useScaffoldContractRead({
+    contractName: "ClassyLoogies",
+    functionName: "generateHat",
+    args: [BigInt(selectedOption.value)],
+  });
+  const { data: svgFour } = useScaffoldContractRead({ contractName: "ClassyLoogies", functionName: "generateEye2" });
+  const { data: svgFive } = useScaffoldContractRead({
+    contractName: "ClassyLoogies",
+    functionName: "generateWeapon",
+    args: [BigInt(selectedOption.value)],
+  });
 
-  //   const jsonManifestString = Buffer.from(generatedMetadata ? generatedMetadata.substring(29) : "", "base64");
-  //   const json = jsonManifestString.toString().length > 0 ? JSON.parse(jsonManifestString.toString()) : "";
+  const { data: generatedMetadata } = useScaffoldContractRead({
+    contractName: "ClassyLoogies",
+    functionName: "generateMetadata",
+    args: [
+      selectedName,
+      selectedClassInformation?.description,
+      attributes,
+      [svgOne!, svgTwo!, svgThree!, svgFour!, svgFive!],
+    ],
+  });
+
+  const jsonManifestString = Buffer.from(generatedMetadata ? generatedMetadata.substring(29) : "", "base64");
+  const json = jsonManifestString.toString().length > 0 ? JSON.parse(jsonManifestString.toString()) : "";
 
   return (
     <div className="my-5 flex flex-col items-center">
@@ -187,12 +210,12 @@ export const ClassyLoogies = () => {
             </form>
             <div className="flex flex-col mx-5">
               <p className="text-center text-2xl">Preview</p>
-              {/* <ClassyLoogieAbstracted
+              <ClassyLoogieAbstracted
                 name={json.name}
                 description={json.description}
                 image={json.image}
                 attributes={json.attributes}
-              ></ClassyLoogieAbstracted> */}
+              ></ClassyLoogieAbstracted>
             </div>
           </div>
         </TabPanel>

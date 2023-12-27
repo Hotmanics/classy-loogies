@@ -103,13 +103,13 @@ contract ClassyLoogies is ERC721Enumerable, Ownable, OnChainNft {
     ///////////////////
     // Internal & Private View & Pure Functions
     ///////////////////
-    function generateEye1() internal pure returns (string memory component) {
+    function generateEye1() public pure returns (string memory component) {
         component = '<g id="eye1"><ellipse stroke-width="3" ry="29.5" rx="29.5" id="svg_1" cy="154.5" cx="181.5" stroke="#000" fill="#fff"/><ellipse ry="3.5" rx="2.5" id="svg_3" cy="154.5" cx="173.5" stroke-width="3" stroke="#000" fill="#000000"/></g>';
     }
 
     function generateHead(
         string memory color
-    ) internal pure returns (string memory component) {
+    ) public pure returns (string memory component) {
         component = '<g id="head"><ellipse fill="';
         component = string.concat(component, color);
         component = string.concat(
@@ -120,17 +120,17 @@ contract ClassyLoogies is ERC721Enumerable, Ownable, OnChainNft {
 
     function generateHat(
         uint256 classId
-    ) internal view returns (string memory component) {
+    ) public view returns (string memory component) {
         component = constantClassesInformation[classId].hatSvg;
     }
 
-    function generateEye2() internal pure returns (string memory component) {
+    function generateEye2() public pure returns (string memory component) {
         component = '<g id="eye2"><ellipse stroke-width="3" ry="29.5" rx="29.5" id="svg_2" cy="168.5" cx="209.5" stroke="#000" fill="#fff"/><ellipse ry="3.5" rx="3" id="svg_4" cy="169.5" cx="208" stroke-width="3" fill="#000000" stroke="#000"/></g>';
     }
 
     function generateWeapon(
         uint256 classId
-    ) internal view returns (string memory component) {
+    ) public view returns (string memory component) {
         component = constantClassesInformation[classId].weaponSvg;
     }
 
