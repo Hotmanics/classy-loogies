@@ -87,9 +87,10 @@ export const ClassyLoogies = () => {
 
   // Start: Grab all info for connected account's tokens and set up components
   const [myTokens, setMyTokens] = useState<IClassyLoogie[]>([]);
+  const [allTokens, setAllTokens] = useState<IClassyLoogie[]>([]);
 
   useEffect(() => {
-    async function getAllOwnedTokens() {
+    async function getTokens() {
       if (!ownerBalance) return;
       if (!account) return;
 
@@ -105,31 +106,23 @@ export const ClassyLoogies = () => {
       }
 
       setMyTokens(tokens);
-    }
 
-    getAllOwnedTokens();
-  }, [ownerBalance]);
-
-  const [allTokens, setAllTokens] = useState<IClassyLoogie[]>([]);
-
-  useEffect(() => {
-    async function getAllTokens() {
-      const tokens: IClassyLoogie[] = [];
+      const _allTokens: IClassyLoogie[] = [];
 
       const totalSupply = await yourContract?.read.totalSupply();
 
       for (let i = 0; i < parseInt(totalSupply?.toString() || ""); i++) {
         const tokenURI = await yourContract?.read.tokenURI([BigInt(i || 0)]);
-        tokens.push({
+        _allTokens.push({
           tokenId: BigInt(i),
           tokenURI,
         });
       }
 
-      setAllTokens(tokens);
+      setAllTokens(_allTokens);
     }
 
-    getAllTokens();
+    getTokens();
   }, [ownerBalance]);
 
   const myTokensComponents = myTokens.map(myToken => (
