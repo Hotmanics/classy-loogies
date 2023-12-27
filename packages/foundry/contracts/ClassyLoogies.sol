@@ -41,6 +41,11 @@ contract ClassyLoogies is ERC721Enumerable, Ownable {
         string weaponSvg;
     }
 
+    struct Attribute {
+        string name;
+        string value;
+    }
+
     ///////////////////
     // State Variables
     ///////////////////
@@ -105,18 +110,42 @@ contract ClassyLoogies is ERC721Enumerable, Ownable {
     function _tokenURI(
         uint256 id
     ) internal view returns (string memory metadata) {
-        metadata = _generateMetadataOfToken(id);
-        metadata = string(
-            abi.encodePacked(
-                "data:application/json;base64,",
-                Base64.encode(bytes(abi.encodePacked(metadata)))
-            )
+        Attribute[] memory attributes = new Attribute[](5);
+        attributes[0] = Attribute(
+            "Class",
+            constantClassesInformation[stats[id].class].name
         );
-    }
+        attributes[1] = Attribute(
+            "Weapon",
+            constantClassesInformation[stats[id].class].weapon
+        );
+        attributes[2] = Attribute(
+            "Strength",
+            uint2str(constantClassesInformation[stats[id].class].strength)
+        );
+        attributes[3] = Attribute(
+            "Spellpower",
+            uint2str(constantClassesInformation[stats[id].class].spellpower)
+        );
+        attributes[4] = Attribute(
+            "Dexterity",
+            uint2str(constantClassesInformation[stats[id].class].dexterity)
+        );
 
-    struct Attribute {
-        string name;
-        string value;
+        metadata = generateMetadata(
+            stats[id].name,
+            constantClassesInformation[stats[id].class].description,
+            stats[id].color,
+            stats[id].class,
+            attributes
+        );
+
+        // metadata = string(
+        //     abi.encodePacked(
+        //         "data:application/json;base64,",
+        //         Base64.encode(bytes(abi.encodePacked(metadata)))
+        //     )
+        // );
     }
 
     function _generateAttributes(
@@ -140,26 +169,12 @@ contract ClassyLoogies is ERC721Enumerable, Ownable {
         }
     }
 
-    function generateMetadata(
-        string memory name,
-        string memory description,
-        string memory color,
-        uint256 classId
-    ) external view returns (string memory metadata) {
-        metadata = _generateMetadata(name, description, color, classId);
-        metadata = string(
-            abi.encodePacked(
-                "data:application/json;base64,",
-                Base64.encode(bytes(abi.encodePacked(metadata)))
-            )
-        );
-    }
-
     function _generateMetadata(
         string memory name,
         string memory description,
         string memory color,
-        uint256 classId
+        uint256 classId,
+        Attribute[] memory attributes
     ) internal view returns (string memory metadata) {
         string memory metadataName = string(abi.encodePacked(name));
         string memory metadataDescription = string(
@@ -170,29 +185,6 @@ contract ClassyLoogies is ERC721Enumerable, Ownable {
         metadata = string.concat(metadata, metadataName);
         metadata = string.concat(metadata, '", "description":"');
         metadata = string.concat(metadata, metadataDescription);
-
-        Attribute[] memory attributes = new Attribute[](5);
-        attributes[0] = Attribute(
-            "Class",
-            constantClassesInformation[classId].name
-        );
-        attributes[1] = Attribute(
-            "Weapon",
-            constantClassesInformation[classId].weapon
-        );
-        attributes[2] = Attribute(
-            "Strength",
-            uint2str(constantClassesInformation[classId].strength)
-        );
-        attributes[3] = Attribute(
-            "Spellpower",
-            uint2str(constantClassesInformation[classId].spellpower)
-        );
-        attributes[4] = Attribute(
-            "Dexterity",
-            uint2str(constantClassesInformation[classId].dexterity)
-        );
-
         metadata = string.concat(metadata, _generateAttributes(attributes));
 
         // metadata = string.concat(metadata, ', "owner":"');
@@ -209,73 +201,7 @@ contract ClassyLoogies is ERC721Enumerable, Ownable {
         metadata = string.concat(metadata, "data:image/svg+xml;base64,");
         metadata = string.concat(metadata, image);
         metadata = string.concat(metadata, '"');
-
         metadata = string.concat(metadata, "}");
-    }
-
-    function _generateMetadataOfToken(
-        uint256 id
-    ) internal view returns (string memory metadata) {
-        string memory name = string(abi.encodePacked(stats[id].name));
-        string memory description = string(
-            abi.encodePacked(
-                constantClassesInformation[stats[id].class].description
-            )
-        );
-        string memory image = Base64.encode(bytes(generateSvgOfToken(id)));
-
-        metadata = string.concat(metadata, '{"name":"');
-        metadata = string.concat(metadata, name);
-        metadata = string.concat(metadata, '", "description":"');
-        metadata = string.concat(metadata, description);
-
-        Attribute[] memory attributes = new Attribute[](5);
-        attributes[0] = Attribute(
-            "Class",
-            constantClassesInformation[stats[id].class].name
-        );
-        attributes[1] = Attribute(
-            "Weapon",
-            constantClassesInformation[stats[id].class].weapon
-        );
-        attributes[2] = Attribute(
-            "Strength",
-            uint2str(constantClassesInformation[stats[id].class].strength)
-        );
-        attributes[3] = Attribute(
-            "Spellpower",
-            uint2str(constantClassesInformation[stats[id].class].spellpower)
-        );
-        attributes[4] = Attribute(
-            "Dexterity",
-            uint2str(constantClassesInformation[stats[id].class].dexterity)
-        );
-
-        metadata = string.concat(metadata, _generateAttributes(attributes));
-
-        metadata = string.concat(metadata, ', "owner":"');
-        metadata = string.concat(
-            metadata,
-            (uint160(ownerOf(id))).toHexString(20)
-        );
-        metadata = string.concat(metadata, '", "image": "');
-        metadata = string.concat(metadata, "data:image/svg+xml;base64,");
-        metadata = string.concat(metadata, image);
-        metadata = string.concat(metadata, '"}');
-    }
-
-    function generateSvgOfToken(
-        uint256 id
-    ) internal view returns (string memory) {
-        string memory svg = string(
-            abi.encodePacked(
-                '<svg width="400" height="400" xmlns="http://www.w3.org/2000/svg">',
-                _renderToken(id),
-                "</svg>"
-            )
-        );
-
-        return svg;
     }
 
     function generateSvgOfToken(
@@ -291,33 +217,6 @@ contract ClassyLoogies is ERC721Enumerable, Ownable {
         );
 
         return svg;
-    }
-
-    function _renderToken(
-        uint256 id
-    ) internal view returns (string memory render) {
-        string memory fullComposition = "";
-
-        fullComposition = string.concat(fullComposition, generateEye1());
-
-        fullComposition = string.concat(
-            fullComposition,
-            generateHead(stats[id].color)
-        );
-
-        fullComposition = string.concat(
-            fullComposition,
-            generateHat(stats[id].class)
-        );
-
-        fullComposition = string.concat(fullComposition, generateEye2());
-
-        fullComposition = string.concat(
-            fullComposition,
-            generateWeapon(stats[id].class)
-        );
-
-        render = string(abi.encodePacked(fullComposition));
     }
 
     function _renderToken(
@@ -429,7 +328,15 @@ contract ClassyLoogies is ERC721Enumerable, Ownable {
     function renderToken(
         uint256 id
     ) public view returns (string memory render) {
-        render = _renderToken(id);
+        render = _renderToken(stats[id].class, stats[id].color);
+    }
+
+    function getConstantClassesInformation()
+        external
+        view
+        returns (ConstantClassInformation[] memory)
+    {
+        return constantClassesInformation;
     }
 
     function getConstantClassInformation(
@@ -440,5 +347,27 @@ contract ClassyLoogies is ERC721Enumerable, Ownable {
         returns (ConstantClassInformation memory constantClassInformation)
     {
         constantClassInformation = constantClassesInformation[classId];
+    }
+
+    function generateMetadata(
+        string memory name,
+        string memory description,
+        string memory color,
+        uint256 classId,
+        Attribute[] memory attributes
+    ) public view returns (string memory metadata) {
+        metadata = _generateMetadata(
+            name,
+            description,
+            color,
+            classId,
+            attributes
+        );
+        metadata = string(
+            abi.encodePacked(
+                "data:application/json;base64,",
+                Base64.encode(bytes(abi.encodePacked(metadata)))
+            )
+        );
     }
 }

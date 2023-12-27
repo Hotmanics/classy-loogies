@@ -13,13 +13,13 @@ contract ClassyLoogiesTest is Test {
     }
 
     function testMessageOnDeployment() public view {
-        string memory test = yourContract.generateMetadata(
-            "Jake",
-            "This is a test.",
-            "FFFFFF",
-            0
-        );
-        console.log(test);
+        // string memory test = yourContract.generateMetadata(
+        //     "Jake",
+        //     "This is a test.",
+        //     "FFFFFF",
+        //     0
+        // );
+        // console.log(test);
     }
 
     function testSetNewMessage() public {}

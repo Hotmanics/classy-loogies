@@ -7,7 +7,7 @@ import { GenericContractsDeclaration } from "~~/utils/scaffold-eth/contract";
 const deployedContracts = {
   31337: {
     ClassyLoogies: {
-      address: "0xFD471836031dc5108809D173A067e8486B9047A3",
+      address: "0x5FbDB2315678afecb367f032d93F642f64180aa3",
       abi: [
         {
           type: "constructor",
@@ -123,6 +123,23 @@ const deployedContracts = {
               type: "uint256",
               internalType: "uint256",
             },
+            {
+              name: "attributes",
+              type: "tuple[]",
+              internalType: "struct ClassyLoogies.Attribute[]",
+              components: [
+                {
+                  name: "name",
+                  type: "string",
+                  internalType: "string",
+                },
+                {
+                  name: "value",
+                  type: "string",
+                  internalType: "string",
+                },
+              ],
+            },
           ],
           outputs: [
             {
@@ -167,6 +184,61 @@ const deployedContracts = {
               name: "constantClassInformation",
               type: "tuple",
               internalType: "struct ClassyLoogies.ConstantClassInformation",
+              components: [
+                {
+                  name: "name",
+                  type: "string",
+                  internalType: "string",
+                },
+                {
+                  name: "description",
+                  type: "string",
+                  internalType: "string",
+                },
+                {
+                  name: "weapon",
+                  type: "string",
+                  internalType: "string",
+                },
+                {
+                  name: "strength",
+                  type: "uint256",
+                  internalType: "uint256",
+                },
+                {
+                  name: "spellpower",
+                  type: "uint256",
+                  internalType: "uint256",
+                },
+                {
+                  name: "dexterity",
+                  type: "uint256",
+                  internalType: "uint256",
+                },
+                {
+                  name: "hatSvg",
+                  type: "string",
+                  internalType: "string",
+                },
+                {
+                  name: "weaponSvg",
+                  type: "string",
+                  internalType: "string",
+                },
+              ],
+            },
+          ],
+          stateMutability: "view",
+        },
+        {
+          type: "function",
+          name: "getConstantClassesInformation",
+          inputs: [],
+          outputs: [
+            {
+              name: "",
+              type: "tuple[]",
+              internalType: "struct ClassyLoogies.ConstantClassInformation[]",
               components: [
                 {
                   name: "name",

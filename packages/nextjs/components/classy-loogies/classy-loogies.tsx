@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { ClassyLoogie, IClassyLoogie } from "./classy-loogie";
 import { ClassyLoogieAbstracted } from "./classy-loogie-abstracted";
-import { CompactPicker } from "react-color";
+import { SketchPicker } from "react-color";
 import Dropdown from "react-dropdown";
 import "react-dropdown/style.css";
 import { Tab, TabList, TabPanel, Tabs } from "react-tabs";
@@ -55,6 +55,29 @@ export const ClassyLoogies = () => {
     getAllOwnedTokens();
   }, [ownerBalance]);
 
+  const [attributes, setAttributes] = useState([{ name: "", value: "" }]);
+
+  async function getAllConstantClasses() {
+    const result = await yourContract?.read.getConstantClassesInformation();
+
+    if (result === undefined) return;
+
+    console.log(result);
+
+    const attributes = [];
+    attributes.push({ name: "Class", value: result![+selectedOption.value].name ?? "" });
+    attributes.push({ name: "Weapon", value: result![+selectedOption.value].weapon });
+    attributes.push({ name: "Strength", value: result![+selectedOption.value].strength.toString() });
+    attributes.push({ name: "Spellpower", value: result![+selectedOption.value].spellpower.toString() });
+    attributes.push({ name: "Dexterity", value: result![+selectedOption.value].dexterity.toString() });
+
+    setAttributes(attributes);
+  }
+
+  useEffect(() => {
+    getAllConstantClasses();
+  }, [yourContract]);
+
   const myTokensComponents = myTokens.map(myToken => (
     <ClassyLoogie tokenId={myToken.tokenId} tokenURI={myToken.tokenURI} key={myToken.tokenId}></ClassyLoogie>
   ));
@@ -93,22 +116,14 @@ export const ClassyLoogies = () => {
     args: [BigInt(selectedOption.value)],
   });
 
-  console.log(selectedName);
-  console.log(selectedClassInformation?.description);
-  console.log(selectedOption.value);
-
-  console.log(color);
   const { data: generatedMetadata } = useScaffoldContractRead({
     contractName: "ClassyLoogies",
     functionName: "generateMetadata",
-    args: [selectedName, selectedClassInformation?.description, color, BigInt(selectedOption.value)],
+    args: [selectedName, selectedClassInformation?.description, color, BigInt(selectedOption.value), attributes],
   });
-  console.log(generatedMetadata);
 
   const jsonManifestString = Buffer.from(generatedMetadata ? generatedMetadata.substring(29) : "", "base64");
-  console.log(jsonManifestString.toString());
   const json = jsonManifestString.toString().length > 0 ? JSON.parse(jsonManifestString.toString()) : "";
-  console.log(json);
 
   return (
     <div className="my-5 flex flex-col items-center">
@@ -119,7 +134,7 @@ export const ClassyLoogies = () => {
         </TabList>
         <TabPanel>
           <p className="my-1 text-2xl text-center">Create Your Classy Loogie!</p>
-          <div className="flex items-center">
+          <div className="flex items-center items-start">
             <form
               className="flex flex-col justify-center items-center"
               method="post"
@@ -130,14 +145,14 @@ export const ClassyLoogies = () => {
             >
               <p className="my-1 text-2xl">Customization</p>
 
-              <p>Name</p>
+              <p className="my-1">Name</p>
               <input
                 name="nameInput"
                 defaultValue="Alfred"
                 onChange={onNameChange}
-                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                className="my-1 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
               />
-              <p>Class</p>
+              <p className="my-1">Class</p>
               <Dropdown
                 className=""
                 options={options}
@@ -145,8 +160,8 @@ export const ClassyLoogies = () => {
                 value={defaultOption}
                 placeholder="Select an option"
               />
-              <p>Color</p>
-              <CompactPicker
+              <p className="my-1">Color</p>
+              <SketchPicker
                 color={color}
                 onChangeComplete={color => {
                   setColor(color.hex);
@@ -160,7 +175,7 @@ export const ClassyLoogies = () => {
               </button>
               <p className="my-1">*Minting costs at least .05 ether</p>
             </form>
-            <div className="mx-5">
+            <div className="flex flex-col mx-5">
               <p className="text-center text-2xl">Preview</p>
               <ClassyLoogieAbstracted
                 name={json.name}
