@@ -6,7 +6,7 @@ export interface IClassyLoogie {
 }
 
 export const ClassyLoogie: React.FC<IClassyLoogie> = props => {
-  const jsonManifestString = Buffer.from(props.tokenURI!.substring(29), "base64");
+  const jsonManifestString = Buffer.from((props.tokenURI || "").substring(29), "base64");
 
   const json = JSON.parse(jsonManifestString.toString());
 
