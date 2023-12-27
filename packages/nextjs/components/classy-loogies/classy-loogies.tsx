@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { ClassyLoogie, IClassyLoogie } from "./classy-loogie";
 import { ClassyLoogieAbstracted } from "./classy-loogie-abstracted";
-import { SketchPicker } from "react-color";
+import { ColorState, SketchPicker } from "react-color";
 import Dropdown from "react-dropdown";
 import "react-dropdown/style.css";
 import { Tab, TabList, TabPanel, Tabs } from "react-tabs";
@@ -10,16 +10,46 @@ import { parseEther } from "viem";
 import { useAccount } from "wagmi";
 import { useScaffoldContract, useScaffoldContractRead, useScaffoldContractWrite } from "~~/hooks/scaffold-eth";
 
+const classOptions = [
+  { value: "0", label: "Warrior" },
+  { value: "1", label: "Wizard" },
+  { value: "2", label: "Archer" },
+];
+
 export const ClassyLoogies = () => {
   const { address: account } = useAccount();
 
-  const [color, setColor] = useState("#FFFFF");
-  const [selectedOption, setSelectedOption] = useState({ value: "0", label: "Warrior" });
+  // Start: Handle all required client data
+  const [selectedName, setSelectedName] = useState("Alfred");
+  const [selectedClass, setSelectedClass] = useState(classOptions[0]);
+  const [selectedColor, setSelectedColor] = useState("#FFFFF");
+
+  async function onNameInputChanged(event: any) {
+    event.preventDefault();
+    const target = event.target;
+
+    setSelectedName(target.value);
+    console.log(target.value);
+  }
+
+  async function onClassDropdownChanged(option: any) {
+    setSelectedClass(option);
+  }
+
+  async function onColorPickerChanged(color: ColorState) {
+    setSelectedColor(color.hex);
+  }
+
+  async function handleMint(event: any) {
+    event.preventDefault();
+
+    await mint({ args: [event.target.nameInput.value, selectedColor, BigInt(+selectedClass.value)] });
+  }
 
   const { writeAsync: mint } = useScaffoldContractWrite({
     contractName: "ClassyLoogies",
     functionName: "mint",
-    args: ["", color, BigInt(0)],
+    args: ["", selectedColor, BigInt(0)],
     value: parseEther("0.05"),
   });
 
@@ -33,6 +63,7 @@ export const ClassyLoogies = () => {
     contractName: "ClassyLoogies",
   });
 
+  // Start: Grab all info for connected account's tokens and set up components
   const [myTokens, setMyTokens] = useState<IClassyLoogie[]>([]);
 
   async function getAllOwnedTokens() {
@@ -56,6 +87,11 @@ export const ClassyLoogies = () => {
     getAllOwnedTokens();
   }, [ownerBalance]);
 
+  const myTokensComponents = myTokens.map(myToken => (
+    <ClassyLoogie tokenId={myToken.tokenId} tokenURI={myToken.tokenURI} key={myToken.tokenId}></ClassyLoogie>
+  ));
+
+  // Start: Handle all client side rendering possibilities from smart contract and components to view them properly
   const [attributes, setAttributes] = useState([{ name: "", value: "" }]);
 
   const { data: allConstantClasses } = useScaffoldContractRead({
@@ -63,24 +99,23 @@ export const ClassyLoogies = () => {
     functionName: "getConstantClassesInformation",
   });
 
-  console.log("Hi");
   async function getAllConstantClasses() {
     if (allConstantClasses === undefined) return;
 
     const selectedAttributes = [];
-    selectedAttributes.push({ name: "Class", value: allConstantClasses![+selectedOption.value].name });
-    selectedAttributes.push({ name: "Weapon", value: allConstantClasses![+selectedOption.value].weapon });
+    selectedAttributes.push({ name: "Class", value: allConstantClasses![+selectedClass.value].name });
+    selectedAttributes.push({ name: "Weapon", value: allConstantClasses![+selectedClass.value].weapon });
     selectedAttributes.push({
       name: "Strength",
-      value: allConstantClasses![+selectedOption.value].strength.toString(),
+      value: allConstantClasses![+selectedClass.value].strength.toString(),
     });
     selectedAttributes.push({
       name: "Spellpower",
-      value: allConstantClasses![+selectedOption.value].spellpower.toString(),
+      value: allConstantClasses![+selectedClass.value].spellpower.toString(),
     });
     selectedAttributes.push({
       name: "Dexterity",
-      value: allConstantClasses![+selectedOption.value].dexterity.toString(),
+      value: allConstantClasses![+selectedClass.value].dexterity.toString(),
     });
 
     setAttributes(selectedAttributes);
@@ -90,58 +125,28 @@ export const ClassyLoogies = () => {
     getAllConstantClasses();
   }, [allConstantClasses]);
 
-  const myTokensComponents = myTokens.map(myToken => (
-    <ClassyLoogie tokenId={myToken.tokenId} tokenURI={myToken.tokenURI} key={myToken.tokenId}></ClassyLoogie>
-  ));
-
-  async function handleMint(name: string) {
-    await mint({ args: [name, color, BigInt(+selectedOption.value)] });
-  }
-
-  const [selectedName, setSelectedName] = useState("Alfred");
-
-  async function onNameChange(event: any) {
-    event.preventDefault();
-    const target = event.target;
-
-    setSelectedName(target.value);
-    console.log(target.value);
-  }
-
-  async function onSelect(option: any) {
-    setSelectedOption(option);
-  }
-
-  const options = [
-    { value: "0", label: "Warrior" },
-    { value: "1", label: "Wizard" },
-    { value: "2", label: "Archer" },
-  ];
-
-  const defaultOption = selectedOption;
-
   const { data: selectedClassInformation } = useScaffoldContractRead({
     contractName: "ClassyLoogies",
     functionName: "getConstantClassInformation",
-    args: [BigInt(selectedOption.value)],
+    args: [BigInt(selectedClass.value)],
   });
 
   const { data: svgOne } = useScaffoldContractRead({ contractName: "ClassyLoogies", functionName: "generateEye1" });
   const { data: svgTwo } = useScaffoldContractRead({
     contractName: "ClassyLoogies",
     functionName: "generateHead",
-    args: [color],
+    args: [selectedColor],
   });
   const { data: svgThree } = useScaffoldContractRead({
     contractName: "ClassyLoogies",
     functionName: "generateHat",
-    args: [BigInt(selectedOption.value)],
+    args: [BigInt(selectedClass.value)],
   });
   const { data: svgFour } = useScaffoldContractRead({ contractName: "ClassyLoogies", functionName: "generateEye2" });
   const { data: svgFive } = useScaffoldContractRead({
     contractName: "ClassyLoogies",
     functionName: "generateWeapon",
-    args: [BigInt(selectedOption.value)],
+    args: [BigInt(selectedClass.value)],
   });
 
   const { data: generatedMetadata } = useScaffoldContractRead({
@@ -168,38 +173,25 @@ export const ClassyLoogies = () => {
         <TabPanel>
           <p className="my-1 text-2xl text-center">Create Your Classy Loogie!</p>
           <div className="flex items-center items-start">
-            <form
-              className="flex flex-col justify-center items-center"
-              method="post"
-              onSubmit={async (event: any) => {
-                event.preventDefault();
-                await handleMint(event.target.nameInput.value);
-              }}
-            >
+            <form className="flex flex-col justify-center items-center" method="post" onSubmit={handleMint}>
               <p className="my-1 text-2xl">Customization</p>
 
               <p className="my-1">Name</p>
               <input
                 name="nameInput"
                 defaultValue="Alfred"
-                onChange={onNameChange}
+                onChange={onNameInputChanged}
                 className="my-1 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
               />
               <p className="my-1">Class</p>
               <Dropdown
-                className=""
-                options={options}
-                onChange={onSelect}
-                value={defaultOption}
+                options={classOptions}
+                onChange={onClassDropdownChanged}
+                value={selectedClass}
                 placeholder="Select an option"
               />
               <p className="my-1">Color</p>
-              <SketchPicker
-                color={color}
-                onChangeComplete={color => {
-                  setColor(color.hex);
-                }}
-              />
+              <SketchPicker color={selectedColor} onChangeComplete={onColorPickerChanged} />
               <button
                 type="submit"
                 className="mx-5 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-5"
@@ -221,7 +213,7 @@ export const ClassyLoogies = () => {
         </TabPanel>
         <TabPanel>
           <p className="text-2xl text-center">My Classy Loogies</p>
-          <div className="flex">{myTokensComponents}</div>
+          <div className="flex grid grid-cols-3">{myTokensComponents}</div>
         </TabPanel>
       </Tabs>
     </div>
