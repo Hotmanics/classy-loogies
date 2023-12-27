@@ -18,13 +18,13 @@ export const menuLinks: HeaderMenuLink[] = [
     href: "/",
   },
   {
-    label: "Debug Contracts",
-    href: "/debug",
+    label: "Classy Loogies",
+    href: "/classy-loogies",
     icon: <BugAntIcon className="h-4 w-4" />,
   },
   {
-    label: "Classy Loogies",
-    href: "/classy-loogies",
+    label: "Debug Contracts",
+    href: "/debug",
     icon: <BugAntIcon className="h-4 w-4" />,
   },
 ];
@@ -41,8 +41,9 @@ export const HeaderMenuLinks = () => {
             <Link
               href={href}
               passHref
-              className={`${isActive ? "bg-secondary shadow-md" : ""
-                } hover:bg-secondary hover:shadow-md focus:!bg-secondary active:!text-neutral py-1.5 px-3 text-sm rounded-full gap-2 grid grid-flow-col`}
+              className={`${
+                isActive ? "bg-secondary shadow-md" : ""
+              } hover:bg-secondary hover:shadow-md focus:!bg-secondary active:!text-neutral py-1.5 px-3 text-sm rounded-full gap-2 grid grid-flow-col`}
             >
               {icon}
               <span>{label}</span>
@@ -95,8 +96,8 @@ export const Header = () => {
             <Image alt="SE2 logo" className="cursor-pointer" fill src="/logo.svg" />
           </div>
           <div className="flex flex-col">
-            <span className="font-bold leading-tight">Scaffold-ETH</span>
-            <span className="text-xs">Ethereum dev stack</span>
+            <span className="font-bold leading-tight">Classy Loogies</span>
+            <span className="text-xs">Providing a little class to NFTs</span>
           </div>
         </Link>
         <ul className="hidden lg:flex lg:flex-nowrap menu menu-horizontal px-1 gap-2">

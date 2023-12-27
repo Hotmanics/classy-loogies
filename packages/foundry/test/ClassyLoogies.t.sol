@@ -12,15 +12,11 @@ contract ClassyLoogiesTest is Test {
         yourContract = new ClassyLoogies(new ClassesDeployer().getClasses());
     }
 
-    function testMessageOnDeployment() public view {
-        // string memory test = yourContract.generateMetadata(
-        //     "Jake",
-        //     "This is a test.",
-        //     "FFFFFF",
-        //     0
-        // );
-        // console.log(test);
-    }
+    function testDeploy() public {
+        ClassyLoogies me = new ClassyLoogies(
+            new ClassesDeployer().getClasses()
+        );
 
-    function testSetNewMessage() public {}
+        me.mint{value: 0.5 ether}("Alfred", "#fffff", 0);
+    }
 }
