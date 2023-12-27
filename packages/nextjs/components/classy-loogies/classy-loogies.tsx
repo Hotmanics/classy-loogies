@@ -124,7 +124,7 @@ export const ClassyLoogies = () => {
     }
 
     getTokens();
-  }, [account, ownerBalance]);
+  }, [account, ownerBalance, yourContract]);
 
   const myTokensComponents = myTokens.map(myToken => (
     <ClassyLoogie tokenId={myToken.tokenId} tokenURI={myToken.tokenURI} key={myToken.tokenId}></ClassyLoogie>
