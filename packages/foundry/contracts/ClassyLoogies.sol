@@ -107,68 +107,8 @@ contract ClassyLoogies is ERC721Enumerable, Ownable {
     ///////////////////
     // Internal & Private View & Pure Functions
     ///////////////////
-    function _tokenURI(
-        uint256 id
-    ) internal view returns (string memory metadata) {
-        Attribute[] memory attributes = new Attribute[](5);
-        attributes[0] = Attribute(
-            "Class",
-            constantClassesInformation[stats[id].class].name
-        );
-        attributes[1] = Attribute(
-            "Weapon",
-            constantClassesInformation[stats[id].class].weapon
-        );
-        attributes[2] = Attribute(
-            "Strength",
-            uint2str(constantClassesInformation[stats[id].class].strength)
-        );
-        attributes[3] = Attribute(
-            "Spellpower",
-            uint2str(constantClassesInformation[stats[id].class].spellpower)
-        );
-        attributes[4] = Attribute(
-            "Dexterity",
-            uint2str(constantClassesInformation[stats[id].class].dexterity)
-        );
 
-        metadata = generateMetadata(
-            stats[id].name,
-            constantClassesInformation[stats[id].class].description,
-            stats[id].color,
-            stats[id].class,
-            attributes
-        );
-
-        // metadata = string(
-        //     abi.encodePacked(
-        //         "data:application/json;base64,",
-        //         Base64.encode(bytes(abi.encodePacked(metadata)))
-        //     )
-        // );
-    }
-
-    function _generateAttributes(
-        Attribute[] memory attributes
-    ) internal pure returns (string memory data) {
-        for (uint256 i = 0; i < attributes.length; i++) {
-            if (i == 0) {
-                data = string.concat(data, '", "attributes": [');
-            }
-
-            data = string.concat(data, '{"trait_type": "');
-            data = string.concat(data, attributes[i].name);
-            data = string.concat(data, '", "value": "');
-            data = string.concat(data, attributes[i].value);
-
-            if (i == attributes.length - 1) {
-                data = string.concat(data, '"}]');
-            } else {
-                data = string.concat(data, '"},');
-            }
-        }
-    }
-
+    // Core Rendering
     function _generateMetadata(
         string memory name,
         string memory description,
@@ -187,31 +127,32 @@ contract ClassyLoogies is ERC721Enumerable, Ownable {
         metadata = string.concat(metadata, metadataDescription);
         metadata = string.concat(metadata, _generateAttributes(attributes));
 
-        // metadata = string.concat(metadata, ', "owner":"');
-        // metadata = string.concat(
-        //     metadata,
-        //     (uint160(ownerOf(id))).toHexString(20)
-        // );
-
-        string memory image = Base64.encode(
-            bytes(generateSvgOfToken(classId, color))
-        );
-
+        string memory image = Base64.encode(bytes(generateSvg(classId, color)));
         metadata = string.concat(metadata, ', "image": "');
         metadata = string.concat(metadata, "data:image/svg+xml;base64,");
         metadata = string.concat(metadata, image);
+
         metadata = string.concat(metadata, '"');
         metadata = string.concat(metadata, "}");
     }
 
-    function generateSvgOfToken(
+    //Image Rendering
+    function generateSvg(
         uint256 classId,
         string memory color
     ) internal view returns (string memory) {
+        string[] memory components = new string[](5);
+
+        components[0] = generateEye1();
+        components[1] = generateHead(color);
+        components[2] = generateHat(classId);
+        components[3] = generateEye2();
+        components[4] = generateWeapon(classId);
+
         string memory svg = string(
             abi.encodePacked(
                 '<svg width="400" height="400" xmlns="http://www.w3.org/2000/svg">',
-                _renderToken(classId, color),
+                _renderToken(components),
                 "</svg>"
             )
         );
@@ -220,17 +161,11 @@ contract ClassyLoogies is ERC721Enumerable, Ownable {
     }
 
     function _renderToken(
-        uint256 classId,
-        string memory color
-    ) internal view returns (string memory fullComposition) {
-        fullComposition = string.concat(fullComposition, generateEye1());
-        fullComposition = string.concat(fullComposition, generateHead(color));
-        fullComposition = string.concat(fullComposition, generateHat(classId));
-        fullComposition = string.concat(fullComposition, generateEye2());
-        fullComposition = string.concat(
-            fullComposition,
-            generateWeapon(classId)
-        );
+        string[] memory components
+    ) internal pure returns (string memory fullComposition) {
+        for (uint256 i = 0; i < components.length; i++) {
+            fullComposition = string.concat(fullComposition, components[i]);
+        }
 
         fullComposition = string(abi.encodePacked(fullComposition));
     }
@@ -292,6 +227,27 @@ contract ClassyLoogies is ERC721Enumerable, Ownable {
         );
     }
 
+    function _generateAttributes(
+        Attribute[] memory attributes
+    ) internal pure returns (string memory data) {
+        for (uint256 i = 0; i < attributes.length; i++) {
+            if (i == 0) {
+                data = string.concat(data, '", "attributes": [');
+            }
+
+            data = string.concat(data, '{"trait_type": "');
+            data = string.concat(data, attributes[i].name);
+            data = string.concat(data, '", "value": "');
+            data = string.concat(data, attributes[i].value);
+
+            if (i == attributes.length - 1) {
+                data = string.concat(data, '"}]');
+            } else {
+                data = string.concat(data, '"},');
+            }
+        }
+    }
+
     function uint2str(
         uint _i
     ) internal pure returns (string memory _uintAsString) {
@@ -319,18 +275,6 @@ contract ClassyLoogies is ERC721Enumerable, Ownable {
     ///////////////////
     // External & Public View & Pure Functions
     ///////////////////
-    function tokenURI(
-        uint256 id
-    ) public view override returns (string memory metadata) {
-        metadata = _tokenURI(id);
-    }
-
-    function renderToken(
-        uint256 id
-    ) public view returns (string memory render) {
-        render = _renderToken(stats[id].class, stats[id].color);
-    }
-
     function getConstantClassesInformation()
         external
         view
@@ -347,6 +291,49 @@ contract ClassyLoogies is ERC721Enumerable, Ownable {
         returns (ConstantClassInformation memory constantClassInformation)
     {
         constantClassInformation = constantClassesInformation[classId];
+    }
+
+    function tokenURI(
+        uint256 id
+    ) public view override returns (string memory metadata) {
+        Attribute[] memory attributes = new Attribute[](5);
+        attributes[0] = Attribute(
+            "Class",
+            constantClassesInformation[stats[id].class].name
+        );
+        attributes[1] = Attribute(
+            "Weapon",
+            constantClassesInformation[stats[id].class].weapon
+        );
+        attributes[2] = Attribute(
+            "Strength",
+            uint2str(constantClassesInformation[stats[id].class].strength)
+        );
+        attributes[3] = Attribute(
+            "Spellpower",
+            uint2str(constantClassesInformation[stats[id].class].spellpower)
+        );
+        attributes[4] = Attribute(
+            "Dexterity",
+            uint2str(constantClassesInformation[stats[id].class].dexterity)
+        );
+
+        metadata = generateMetadata(
+            stats[id].name,
+            constantClassesInformation[stats[id].class].description,
+            stats[id].color,
+            stats[id].class,
+            attributes
+        );
+
+        // metadata = _tokenURI(id);
+    }
+
+    function renderToken(
+        // uint256 id,
+        string[] memory components
+    ) public pure returns (string memory render) {
+        render = _renderToken(components);
     }
 
     function generateMetadata(

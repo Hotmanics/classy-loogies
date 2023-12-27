@@ -7,7 +7,7 @@ import { GenericContractsDeclaration } from "~~/utils/scaffold-eth/contract";
 const deployedContracts = {
   31337: {
     ClassyLoogies: {
-      address: "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+      address: "0xB7f8BC63BbcaD18155201308C8f3540b07f84F5e",
       abi: [
         {
           type: "constructor",
@@ -388,9 +388,9 @@ const deployedContracts = {
           name: "renderToken",
           inputs: [
             {
-              name: "id",
-              type: "uint256",
-              internalType: "uint256",
+              name: "components",
+              type: "string[]",
+              internalType: "string[]",
             },
           ],
           outputs: [
@@ -400,7 +400,7 @@ const deployedContracts = {
               internalType: "string",
             },
           ],
-          stateMutability: "view",
+          stateMutability: "pure",
         },
         {
           type: "function",

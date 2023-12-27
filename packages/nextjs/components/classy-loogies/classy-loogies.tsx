@@ -13,7 +13,8 @@ import { useScaffoldContract, useScaffoldContractRead, useScaffoldContractWrite 
 export const ClassyLoogies = () => {
   const { address: account } = useAccount();
 
-  const [color, setColor] = useState("");
+  const [color, setColor] = useState("#FFFFF");
+  const [selectedOption, setSelectedOption] = useState({ value: "0", label: "Warrior" });
 
   const { writeAsync: mint } = useScaffoldContractWrite({
     contractName: "ClassyLoogies",
@@ -57,26 +58,37 @@ export const ClassyLoogies = () => {
 
   const [attributes, setAttributes] = useState([{ name: "", value: "" }]);
 
+  const { data: allConstantClasses } = useScaffoldContractRead({
+    contractName: "ClassyLoogies",
+    functionName: "getConstantClassesInformation",
+  });
+
+  console.log("Hi");
   async function getAllConstantClasses() {
-    const result = await yourContract?.read.getConstantClassesInformation();
+    if (allConstantClasses === undefined) return;
 
-    if (result === undefined) return;
+    const selectedAttributes = [];
+    selectedAttributes.push({ name: "Class", value: allConstantClasses![+selectedOption.value].name });
+    selectedAttributes.push({ name: "Weapon", value: allConstantClasses![+selectedOption.value].weapon });
+    selectedAttributes.push({
+      name: "Strength",
+      value: allConstantClasses![+selectedOption.value].strength.toString(),
+    });
+    selectedAttributes.push({
+      name: "Spellpower",
+      value: allConstantClasses![+selectedOption.value].spellpower.toString(),
+    });
+    selectedAttributes.push({
+      name: "Dexterity",
+      value: allConstantClasses![+selectedOption.value].dexterity.toString(),
+    });
 
-    console.log(result);
-
-    const attributes = [];
-    attributes.push({ name: "Class", value: result![+selectedOption.value].name ?? "" });
-    attributes.push({ name: "Weapon", value: result![+selectedOption.value].weapon });
-    attributes.push({ name: "Strength", value: result![+selectedOption.value].strength.toString() });
-    attributes.push({ name: "Spellpower", value: result![+selectedOption.value].spellpower.toString() });
-    attributes.push({ name: "Dexterity", value: result![+selectedOption.value].dexterity.toString() });
-
-    setAttributes(attributes);
+    setAttributes(selectedAttributes);
   }
 
   useEffect(() => {
     getAllConstantClasses();
-  }, [yourContract]);
+  }, [allConstantClasses]);
 
   const myTokensComponents = myTokens.map(myToken => (
     <ClassyLoogie tokenId={myToken.tokenId} tokenURI={myToken.tokenURI} key={myToken.tokenId}></ClassyLoogie>
@@ -95,8 +107,6 @@ export const ClassyLoogies = () => {
     setSelectedName(target.value);
     console.log(target.value);
   }
-
-  const [selectedOption, setSelectedOption] = useState({ value: "0", label: "Warrior" });
 
   async function onSelect(option: any) {
     setSelectedOption(option);
