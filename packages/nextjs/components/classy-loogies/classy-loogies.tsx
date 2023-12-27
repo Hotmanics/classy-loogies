@@ -10,6 +10,28 @@ import { parseEther } from "viem";
 import { useAccount } from "wagmi";
 import { useScaffoldContract, useScaffoldContractRead, useScaffoldContractWrite } from "~~/hooks/scaffold-eth";
 
+function getAllConstantClasses(allConstantClasses: any, selectedClass: any) {
+  if (allConstantClasses === undefined) return;
+
+  const selectedAttributes = [];
+  selectedAttributes.push({ name: "Class", value: allConstantClasses[+selectedClass.value].name });
+  selectedAttributes.push({ name: "Weapon", value: allConstantClasses[+selectedClass.value].weapon });
+  selectedAttributes.push({
+    name: "Strength",
+    value: allConstantClasses[+selectedClass.value].strength.toString(),
+  });
+  selectedAttributes.push({
+    name: "Spellpower",
+    value: allConstantClasses[+selectedClass.value].spellpower.toString(),
+  });
+  selectedAttributes.push({
+    name: "Dexterity",
+    value: allConstantClasses[+selectedClass.value].dexterity.toString(),
+  });
+
+  return selectedAttributes;
+}
+
 const classOptions = [
   { value: "0", label: "Warrior" },
   { value: "1", label: "Wizard" },
@@ -86,14 +108,14 @@ export const ClassyLoogies = () => {
 
   useEffect(() => {
     getAllOwnedTokens();
-  }, [ownerBalance]);
+  }, [ownerBalance, account]);
 
   const myTokensComponents = myTokens.map(myToken => (
     <ClassyLoogie tokenId={myToken.tokenId} tokenURI={myToken.tokenURI} key={myToken.tokenId}></ClassyLoogie>
   ));
 
   // Start: Handle all client side rendering possibilities from smart contract and components to view them properly
-  const [attributes, setAttributes] = useState([{ name: "", value: "" }]);
+  // const [attributes, setAttributes] = useState([{ name: "", value: "" }]);
 
   const { data: allConstantClasses } = useScaffoldContractRead({
     contractName: "ClassyLoogies",
@@ -102,31 +124,7 @@ export const ClassyLoogies = () => {
 
   console.log("Glee");
 
-  async function getAllConstantClasses() {
-    if (allConstantClasses === undefined) return;
-
-    const selectedAttributes = [];
-    selectedAttributes.push({ name: "Class", value: allConstantClasses[+selectedClass.value].name });
-    selectedAttributes.push({ name: "Weapon", value: allConstantClasses[+selectedClass.value].weapon });
-    selectedAttributes.push({
-      name: "Strength",
-      value: allConstantClasses[+selectedClass.value].strength.toString(),
-    });
-    selectedAttributes.push({
-      name: "Spellpower",
-      value: allConstantClasses[+selectedClass.value].spellpower.toString(),
-    });
-    selectedAttributes.push({
-      name: "Dexterity",
-      value: allConstantClasses[+selectedClass.value].dexterity.toString(),
-    });
-
-    setAttributes(selectedAttributes);
-  }
-
-  useEffect(() => {
-    getAllConstantClasses();
-  }, [allConstantClasses]);
+  const attributes = getAllConstantClasses(allConstantClasses, selectedClass);
 
   const { data: selectedClassInformation } = useScaffoldContractRead({
     contractName: "ClassyLoogies",
