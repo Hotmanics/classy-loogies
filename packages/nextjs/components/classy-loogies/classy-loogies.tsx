@@ -93,12 +93,13 @@ export const ClassyLoogies = () => {
     async function getTokens() {
       if (!ownerBalance) return;
       if (!account) return;
+      if (!yourContract) return;
 
       const tokens: IClassyLoogie[] = [];
 
       for (let i = 0; i < ownerBalance; i++) {
-        const tokenId = await yourContract?.read.tokenOfOwnerByIndex([account, BigInt(i)]);
-        const tokenURI = await yourContract?.read.tokenURI([BigInt(tokenId || 0)]);
+        const tokenId = await yourContract.read.tokenOfOwnerByIndex([account, BigInt(i)]);
+        const tokenURI = await yourContract.read.tokenURI([BigInt(tokenId || 0)]);
         tokens.push({
           tokenId,
           tokenURI,
@@ -109,10 +110,10 @@ export const ClassyLoogies = () => {
 
       const _allTokens: IClassyLoogie[] = [];
 
-      const totalSupply = await yourContract?.read.totalSupply();
+      const totalSupply = await yourContract.read.totalSupply();
 
-      for (let i = 0; i < parseInt(totalSupply?.toString() || ""); i++) {
-        const tokenURI = await yourContract?.read.tokenURI([BigInt(i || 0)]);
+      for (let i = 0; i < parseInt(totalSupply.toString() || ""); i++) {
+        const tokenURI = await yourContract.read.tokenURI([BigInt(i || 0)]);
         _allTokens.push({
           tokenId: BigInt(i),
           tokenURI,
@@ -123,7 +124,7 @@ export const ClassyLoogies = () => {
     }
 
     getTokens();
-  }, [ownerBalance]);
+  }, [account, ownerBalance]);
 
   const myTokensComponents = myTokens.map(myToken => (
     <ClassyLoogie tokenId={myToken.tokenId} tokenURI={myToken.tokenURI} key={myToken.tokenId}></ClassyLoogie>
