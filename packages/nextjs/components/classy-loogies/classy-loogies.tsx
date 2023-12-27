@@ -88,29 +88,55 @@ export const ClassyLoogies = () => {
   // Start: Grab all info for connected account's tokens and set up components
   const [myTokens, setMyTokens] = useState<IClassyLoogie[]>([]);
 
-  async function getAllOwnedTokens() {
-    if (!ownerBalance) return;
-    if (!account) return;
+  useEffect(() => {
+    async function getAllOwnedTokens() {
+      if (!ownerBalance) return;
+      if (!account) return;
 
-    const tokens: IClassyLoogie[] = [];
+      const tokens: IClassyLoogie[] = [];
 
-    for (let i = 0; i < ownerBalance; i++) {
-      const tokenId = await yourContract?.read.tokenOfOwnerByIndex([account, BigInt(i)]);
-      const tokenURI = await yourContract?.read.tokenURI([BigInt(tokenId || 0)]);
-      tokens.push({
-        tokenId,
-        tokenURI,
-      });
+      for (let i = 0; i < ownerBalance; i++) {
+        const tokenId = await yourContract?.read.tokenOfOwnerByIndex([account, BigInt(i)]);
+        const tokenURI = await yourContract?.read.tokenURI([BigInt(tokenId || 0)]);
+        tokens.push({
+          tokenId,
+          tokenURI,
+        });
+      }
+
+      setMyTokens(tokens);
     }
 
-    setMyTokens(tokens);
-  }
+    getAllOwnedTokens();
+  }, [ownerBalance]);
+
+  const [allTokens, setAllTokens] = useState<IClassyLoogie[]>([]);
 
   useEffect(() => {
-    getAllOwnedTokens();
-  }, [ownerBalance, account]);
+    async function getAllTokens() {
+      const tokens: IClassyLoogie[] = [];
+
+      const totalSupply = await yourContract?.read.totalSupply();
+
+      for (let i = 0; i < parseInt(totalSupply?.toString() || ""); i++) {
+        const tokenURI = await yourContract?.read.tokenURI([BigInt(i || 0)]);
+        tokens.push({
+          tokenId: BigInt(i),
+          tokenURI,
+        });
+      }
+
+      setAllTokens(tokens);
+    }
+
+    getAllTokens();
+  }, [ownerBalance]);
 
   const myTokensComponents = myTokens.map(myToken => (
+    <ClassyLoogie tokenId={myToken.tokenId} tokenURI={myToken.tokenURI} key={myToken.tokenId}></ClassyLoogie>
+  ));
+
+  const allTokensComponents = allTokens.map(myToken => (
     <ClassyLoogie tokenId={myToken.tokenId} tokenURI={myToken.tokenURI} key={myToken.tokenId}></ClassyLoogie>
   ));
 
@@ -168,9 +194,14 @@ export const ClassyLoogies = () => {
     <div className="my-5 flex flex-col items-center">
       <Tabs>
         <TabList>
+          <Tab>All Loogies</Tab>
           <Tab>Creation</Tab>
           <Tab>My Classy Loogies</Tab>
         </TabList>
+        <TabPanel>
+          <p className="text-2xl text-center">All Loogies</p>
+          <div className="flex grid grid-cols-3">{allTokensComponents}</div>
+        </TabPanel>
         <TabPanel>
           <p className="my-1 text-2xl text-center">Create Your Classy Loogie!</p>
           <div className="flex items-center items-start">
