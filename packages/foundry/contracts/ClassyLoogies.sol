@@ -8,8 +8,9 @@ import "@openzeppelin/contracts/utils/Base64.sol";
 
 import "./HexStrings.sol";
 import "./ToColor.sol";
+import "./OnChainNft.sol";
 
-contract ClassyLoogies is ERC721Enumerable, Ownable {
+contract ClassyLoogies is ERC721Enumerable, Ownable, OnChainNft {
     ///////////////////
     // Errors
     ///////////////////
@@ -39,11 +40,6 @@ contract ClassyLoogies is ERC721Enumerable, Ownable {
         uint256 dexterity;
         string hatSvg;
         string weaponSvg;
-    }
-
-    struct Attribute {
-        string name;
-        string value;
     }
 
     ///////////////////
@@ -107,145 +103,35 @@ contract ClassyLoogies is ERC721Enumerable, Ownable {
     ///////////////////
     // Internal & Private View & Pure Functions
     ///////////////////
-
-    // Core Rendering
-    function _generateMetadata(
-        string memory name,
-        string memory description,
-        string memory color,
-        uint256 classId,
-        Attribute[] memory attributes
-    ) internal view returns (string memory metadata) {
-        string memory metadataName = string(abi.encodePacked(name));
-        string memory metadataDescription = string(
-            abi.encodePacked(description)
-        );
-
-        metadata = string.concat(metadata, '{"name":"');
-        metadata = string.concat(metadata, metadataName);
-        metadata = string.concat(metadata, '", "description":"');
-        metadata = string.concat(metadata, metadataDescription);
-        metadata = string.concat(metadata, _generateAttributes(attributes));
-
-        string memory image = Base64.encode(bytes(generateSvg(classId, color)));
-        metadata = string.concat(metadata, ', "image": "');
-        metadata = string.concat(metadata, "data:image/svg+xml;base64,");
-        metadata = string.concat(metadata, image);
-
-        metadata = string.concat(metadata, '"');
-        metadata = string.concat(metadata, "}");
-    }
-
-    //Image Rendering
-    function generateSvg(
-        uint256 classId,
-        string memory color
-    ) internal view returns (string memory) {
-        string[] memory components = new string[](5);
-
-        components[0] = generateEye1();
-        components[1] = generateHead(color);
-        components[2] = generateHat(classId);
-        components[3] = generateEye2();
-        components[4] = generateWeapon(classId);
-
-        string memory svg = string(
-            abi.encodePacked(
-                '<svg width="400" height="400" xmlns="http://www.w3.org/2000/svg">',
-                _renderToken(components),
-                "</svg>"
-            )
-        );
-
-        return svg;
-    }
-
-    function _renderToken(
-        string[] memory components
-    ) internal pure returns (string memory fullComposition) {
-        for (uint256 i = 0; i < components.length; i++) {
-            fullComposition = string.concat(fullComposition, components[i]);
-        }
-
-        fullComposition = string(abi.encodePacked(fullComposition));
-    }
-
     function generateEye1() internal pure returns (string memory component) {
-        component = string.concat(component, '<g id="eye1">');
-        component = string.concat(
-            component,
-            '<ellipse stroke-width="3" ry="29.5" rx="29.5" id="svg_1" cy="154.5" cx="181.5" stroke="#000" fill="#fff"/>'
-        );
-        component = string.concat(
-            component,
-            '<ellipse ry="3.5" rx="2.5" id="svg_3" cy="154.5" cx="173.5" stroke-width="3" stroke="#000" fill="#000000"/>'
-        );
-        component = string.concat(component, "</g>");
+        component = '<g id="eye1"><ellipse stroke-width="3" ry="29.5" rx="29.5" id="svg_1" cy="154.5" cx="181.5" stroke="#000" fill="#fff"/><ellipse ry="3.5" rx="2.5" id="svg_3" cy="154.5" cx="173.5" stroke-width="3" stroke="#000" fill="#000000"/></g>';
     }
 
     function generateHead(
         string memory color
     ) internal pure returns (string memory component) {
-        component = string.concat(component, '<g id="head">');
-        component = string.concat(component, '<ellipse fill="');
+        component = '<g id="head"><ellipse fill="';
         component = string.concat(component, color);
         component = string.concat(
             component,
-            '" stroke-width="3" cx="204.5" cy="211.80065" id="svg_5" rx="70" ry="51.80065" stroke="#000"/>'
+            '" stroke-width="3" cx="204.5" cy="211.80065" id="svg_5" rx="70" ry="51.80065" stroke="#000"/></g>'
         );
-        component = string.concat(component, "</g>");
     }
 
     function generateHat(
         uint256 classId
     ) internal view returns (string memory component) {
-        component = string.concat(
-            component,
-            constantClassesInformation[classId].hatSvg
-        );
+        component = constantClassesInformation[classId].hatSvg;
     }
 
     function generateEye2() internal pure returns (string memory component) {
-        component = string.concat(component, '<g id="eye2">');
-        component = string.concat(
-            component,
-            '<ellipse stroke-width="3" ry="29.5" rx="29.5" id="svg_2" cy="168.5" cx="209.5" stroke="#000" fill="#fff"/>'
-        );
-        component = string.concat(
-            component,
-            '<ellipse ry="3.5" rx="3" id="svg_4" cy="169.5" cx="208" stroke-width="3" fill="#000000" stroke="#000"/>'
-        );
-        component = string.concat(component, "</g>");
+        component = '<g id="eye2"><ellipse stroke-width="3" ry="29.5" rx="29.5" id="svg_2" cy="168.5" cx="209.5" stroke="#000" fill="#fff"/><ellipse ry="3.5" rx="3" id="svg_4" cy="169.5" cx="208" stroke-width="3" fill="#000000" stroke="#000"/></g>';
     }
 
     function generateWeapon(
         uint256 classId
     ) internal view returns (string memory component) {
-        component = string.concat(
-            component,
-            constantClassesInformation[classId].weaponSvg
-        );
-    }
-
-    function _generateAttributes(
-        Attribute[] memory attributes
-    ) internal pure returns (string memory data) {
-        for (uint256 i = 0; i < attributes.length; i++) {
-            if (i == 0) {
-                data = string.concat(data, '", "attributes": [');
-            }
-
-            data = string.concat(data, '{"trait_type": "');
-            data = string.concat(data, attributes[i].name);
-            data = string.concat(data, '", "value": "');
-            data = string.concat(data, attributes[i].value);
-
-            if (i == attributes.length - 1) {
-                data = string.concat(data, '"}]');
-            } else {
-                data = string.concat(data, '"},');
-            }
-        }
+        component = constantClassesInformation[classId].weaponSvg;
     }
 
     function uint2str(
@@ -318,43 +204,19 @@ contract ClassyLoogies is ERC721Enumerable, Ownable {
             uint2str(constantClassesInformation[stats[id].class].dexterity)
         );
 
+        string[] memory components = new string[](5);
+
+        components[0] = generateEye1();
+        components[1] = generateHead(stats[id].color);
+        components[2] = generateHat(stats[id].class);
+        components[3] = generateEye2();
+        components[4] = generateWeapon(stats[id].class);
+
         metadata = generateMetadata(
             stats[id].name,
             constantClassesInformation[stats[id].class].description,
-            stats[id].color,
-            stats[id].class,
-            attributes
-        );
-
-        // metadata = _tokenURI(id);
-    }
-
-    function renderToken(
-        // uint256 id,
-        string[] memory components
-    ) public pure returns (string memory render) {
-        render = _renderToken(components);
-    }
-
-    function generateMetadata(
-        string memory name,
-        string memory description,
-        string memory color,
-        uint256 classId,
-        Attribute[] memory attributes
-    ) public view returns (string memory metadata) {
-        metadata = _generateMetadata(
-            name,
-            description,
-            color,
-            classId,
-            attributes
-        );
-        metadata = string(
-            abi.encodePacked(
-                "data:application/json;base64,",
-                Base64.encode(bytes(abi.encodePacked(metadata)))
-            )
+            attributes,
+            components
         );
     }
 }

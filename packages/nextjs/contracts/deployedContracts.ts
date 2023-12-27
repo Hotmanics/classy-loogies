@@ -7,7 +7,7 @@ import { GenericContractsDeclaration } from "~~/utils/scaffold-eth/contract";
 const deployedContracts = {
   31337: {
     ClassyLoogies: {
-      address: "0xB7f8BC63BbcaD18155201308C8f3540b07f84F5e",
+      address: "0xc6e7DF5E7b4f2A278906862b61205850344D4e7d",
       abi: [
         {
           type: "constructor",
@@ -114,19 +114,9 @@ const deployedContracts = {
               internalType: "string",
             },
             {
-              name: "color",
-              type: "string",
-              internalType: "string",
-            },
-            {
-              name: "classId",
-              type: "uint256",
-              internalType: "uint256",
-            },
-            {
               name: "attributes",
               type: "tuple[]",
-              internalType: "struct ClassyLoogies.Attribute[]",
+              internalType: "struct OnChainNft.Attribute[]",
               components: [
                 {
                   name: "name",
@@ -140,6 +130,11 @@ const deployedContracts = {
                 },
               ],
             },
+            {
+              name: "svgComponents",
+              type: "string[]",
+              internalType: "string[]",
+            },
           ],
           outputs: [
             {
@@ -148,7 +143,7 @@ const deployedContracts = {
               internalType: "string",
             },
           ],
-          stateMutability: "view",
+          stateMutability: "pure",
         },
         {
           type: "function",
@@ -915,6 +910,8 @@ const deployedContracts = {
         owner: "lib/openzeppelin-contracts/contracts/access/Ownable.sol",
         renounceOwnership: "lib/openzeppelin-contracts/contracts/access/Ownable.sol",
         transferOwnership: "lib/openzeppelin-contracts/contracts/access/Ownable.sol",
+        generateMetadata: "contracts/OnChainNft.sol",
+        renderToken: "contracts/OnChainNft.sol",
       },
     },
   },
