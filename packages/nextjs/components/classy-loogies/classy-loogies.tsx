@@ -68,12 +68,13 @@ export const ClassyLoogies = () => {
 
   async function getAllOwnedTokens() {
     if (!ownerBalance) return;
+    if (!account) return;
 
     const tokens: IClassyLoogie[] = [];
 
     for (let i = 0; i < ownerBalance; i++) {
-      const tokenId = await yourContract?.read.tokenOfOwnerByIndex([account!, BigInt(i)]);
-      const tokenURI = await yourContract?.read.tokenURI([BigInt(tokenId!)]);
+      const tokenId = await yourContract?.read.tokenOfOwnerByIndex([account, BigInt(i)]);
+      const tokenURI = await yourContract?.read.tokenURI([BigInt(tokenId || 0)]);
       tokens.push({
         tokenId,
         tokenURI,
@@ -99,23 +100,25 @@ export const ClassyLoogies = () => {
     functionName: "getConstantClassesInformation",
   });
 
+  console.log("Glee");
+
   async function getAllConstantClasses() {
     if (allConstantClasses === undefined) return;
 
     const selectedAttributes = [];
-    selectedAttributes.push({ name: "Class", value: allConstantClasses![+selectedClass.value].name });
-    selectedAttributes.push({ name: "Weapon", value: allConstantClasses![+selectedClass.value].weapon });
+    selectedAttributes.push({ name: "Class", value: allConstantClasses[+selectedClass.value].name });
+    selectedAttributes.push({ name: "Weapon", value: allConstantClasses[+selectedClass.value].weapon });
     selectedAttributes.push({
       name: "Strength",
-      value: allConstantClasses![+selectedClass.value].strength.toString(),
+      value: allConstantClasses[+selectedClass.value].strength.toString(),
     });
     selectedAttributes.push({
       name: "Spellpower",
-      value: allConstantClasses![+selectedClass.value].spellpower.toString(),
+      value: allConstantClasses[+selectedClass.value].spellpower.toString(),
     });
     selectedAttributes.push({
       name: "Dexterity",
-      value: allConstantClasses![+selectedClass.value].dexterity.toString(),
+      value: allConstantClasses[+selectedClass.value].dexterity.toString(),
     });
 
     setAttributes(selectedAttributes);
@@ -156,7 +159,7 @@ export const ClassyLoogies = () => {
       selectedName,
       selectedClassInformation?.description,
       attributes,
-      [svgOne!, svgTwo!, svgThree!, svgFour!, svgFive!],
+      [svgOne || "", svgTwo || "", svgThree || "", svgFour || "", svgFive || ""],
     ],
   });
 
